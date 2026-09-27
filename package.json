@@ -1,0 +1,21 @@
+{
+  "name": "banking-api-testing",
+  "version": "1.0.0",
+  "description": "API bancaria simulada en Node.js + Express + SQLite para practicar testing con Postman",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "reset-db": "node -e \"const fs=require('fs'); if(fs.existsSync('./bank.db')){fs.unlinkSync('./bank.db'); console.log('bank.db eliminado, se recreará al iniciar el servidor')} else {console.log('No existe bank.db')}\""
+  },
+  "keywords": ["api", "testing", "postman", "sqlite", "express", "banking-simulation"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "better-sqlite3": "^11.3.0",
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2"
+  }
+}

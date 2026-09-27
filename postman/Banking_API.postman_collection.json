@@ -1,0 +1,170 @@
+{
+  "info": {
+    "name": "Banking API - Testing Practice",
+    "description": "Colección para practicar testing manual y automatizado sobre la API bancaria simulada.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000/api" },
+    { "key": "adminToken", "value": "" },
+    { "key": "userToken", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login Admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const json = pm.response.json();",
+                  "pm.test('Contiene token', () => pm.expect(json.token).to.exist);",
+                  "if (json.token) { pm.collectionVariables.set('adminToken', json.token); }"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"Admin123!\"\n}"
+            },
+            "url": "{{baseUrl}}/auth/login"
+          }
+        },
+        {
+          "name": "Login Usuario Normal",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  const json = pm.response.json();",
+                  "  pm.collectionVariables.set('userToken', json.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"juan\",\n  \"password\": \"Juan123!\"\n}"
+            },
+            "url": "{{baseUrl}}/auth/login"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin - Gestión de usuarios",
+      "item": [
+        {
+          "name": "Crear usuario nuevo",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"juan\",\n  \"password\": \"Juan123!\",\n  \"initialBalance\": 500\n}"
+            },
+            "url": "{{baseUrl}}/users"
+          }
+        },
+        {
+          "name": "Listar todos los usuarios",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": "{{baseUrl}}/users"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cuentas",
+      "item": [
+        {
+          "name": "Ver mi perfil",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{userToken}}" }],
+            "url": "{{baseUrl}}/users/me"
+          }
+        },
+        {
+          "name": "Consultar saldo",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{userToken}}" }],
+            "url": "{{baseUrl}}/users/juan/balance"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Transferencias",
+      "item": [
+        {
+          "name": "Transferencia exitosa",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{userToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fromUsername\": \"juan\",\n  \"toUsername\": \"admin\",\n  \"amount\": 50\n}"
+            },
+            "url": "{{baseUrl}}/transfer"
+          }
+        },
+        {
+          "name": "Transferencia - fondos insuficientes (negativo)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{userToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fromUsername\": \"juan\",\n  \"toUsername\": \"admin\",\n  \"amount\": 999999999\n}"
+            },
+            "url": "{{baseUrl}}/transfer"
+          }
+        },
+        {
+          "name": "Transferencia - usuario destino inexistente (negativo)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{userToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fromUsername\": \"juan\",\n  \"toUsername\": \"no_existe\",\n  \"amount\": 10\n}"
+            },
+            "url": "{{baseUrl}}/transfer"
+          }
+        }
+      ]
+    }
+  ]
+}

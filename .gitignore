@@ -1,0 +1,19 @@
+# Dependencias
+node_modules/
+
+# Base de datos local (se regenera al iniciar el servidor)
+bank.db
+bank.db-journal
+bank.db-wal
+bank.db-shm
+
+# Variables de entorno
+.env
+
+# Logs
+npm-debug.log*
+*.log
+
+# Sistema
+.DS_Store
+Thumbs.db
